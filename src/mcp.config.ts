@@ -3,6 +3,25 @@ import { IMCPConfig } from './types/mcp';
 export default {
   servers: [
     {
+      key: 'ott-mcp-server',
+      name: 'Onetwotrip MCP Server',
+      command: 'node',
+      args: ['./src/mcp-servers/ott-mcp-server/index.js'],
+      description: 'A private MCP server for Onetwotrip.',
+      isActive: false,
+      env: {
+        JIRA_TOKEN: '<jiraToken:string:YOUR_JIRA_TOKEN>',
+        BITBUCKET_TOKEN: '<bitbucketToken:string:YOUR_BITBUCKET_TOKEN>',
+        CONFLUENCE_TOKEN: '<confluenceToken:string:YOUR_CONFLUENCE_TOKEN>',
+        ALLURE_TOKEN: '<allureToken:string:YOUR_ALLURE_TOKEN>',
+        FIGMA_TOKEN: '<figmaToken:string:YOUR_FIGMA_TOKEN>',
+        JIRA_ALLOWED_PROJECTS:
+          '<jiraProjects:string:Comma-separated project names, * for all>',
+        BITBUCKET_ALLOWED_REPOS:
+          '<bitbucketRepos:string:Comma-separated repository names, * for all>',
+      },
+    },
+    {
       key: 'AppleNotes',
       command: 'uvx',
       description:
