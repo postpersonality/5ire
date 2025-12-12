@@ -48,6 +48,7 @@ import useMCPStore from 'stores/useMCPStore';
 import useToast from 'hooks/useToast';
 import { IMCPServer } from 'types/mcp';
 import useMarkdown from 'hooks/useMarkdown';
+import OnetwotripServerSettingsDialog from './OnetwotripServerSettingsDialog';
 import ToolCapabilityTag from './ToolCapabilityTag';
 
 const EditIcon = bundleIcon(EditFilled, EditRegular);
@@ -72,6 +73,13 @@ export default function Grid({
   onDelete: (server: IMCPServer) => void;
   onInspect: (server: IMCPServer) => void;
 }) {
+  const [
+    isOnetwotripServerSettingsOpen,
+    setIsOnetwotripServerSettingsOpen,
+  ] = useState(false);
+  const [selectedServer, setSelectedServer] = useState<IMCPServer | null>(
+    null,
+  );
   const { t } = useTranslation();
   const { render } = useMarkdown();
   const { notifyError } = useToast();
@@ -168,7 +176,14 @@ export default function Grid({
                         <MenuItem
                           disabled={item.isActive}
                           icon={<EditIcon />}
-                          onClick={() => onEdit(item)}
+                          onClick={() => {
+                            if (item.key === 'ott-mcp-server') {
+                              setSelectedServer(item);
+                              setIsOnetwotripServerSettingsOpen(true);
+                            } else {
+                              onEdit(item);
+                            }
+                          }}
                         >
                           {t('Common.Edit')}
                         </MenuItem>
@@ -262,6 +277,13 @@ export default function Grid({
 
   return (
     <div className="w-full pr-4">
+      {selectedServer && (
+        <OnetwotripServerSettingsDialog
+          server={selectedServer}
+          open={isOnetwotripServerSettingsOpen}
+          setOpen={setIsOnetwotripServerSettingsOpen}
+        />
+      )}
       <DataGrid
         items={servers}
         columns={columns}
