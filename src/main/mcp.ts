@@ -279,9 +279,14 @@ export default class ModuleContext {
       } else {
         const { command, args, env, proxy } = mcpSvr;
         let cmd: string = command as string;
+        let finalArgs = args;
         if (command === "npx") {
           cmd = process.platform === "win32" ? `${command}.cmd` : command;
+        } else if (command === "node" && args && args.length > 0) {
+          const scriptPath = path.resolve(app.getAppPath(), args[0]);
+          finalArgs = [scriptPath, ...(args.slice(1) || [])];
         }
+
         const mergedEnv = {
           ...getDefaultEnvironment(),
           ...env,
@@ -297,7 +302,7 @@ export default class ModuleContext {
         };
         const transport = new this.StdioTransport({
           command: cmd,
-          args,
+          args: finalArgs,
           stderr: process.platform === "win32" ? "pipe" : "inherit",
           env: mergedEnv,
         });
