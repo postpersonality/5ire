@@ -86,7 +86,7 @@ npm run prepare
 ### Start the Development Server
 
 ```bash
-npm start -- --no-sandbox --disable-gpu
+npm run dev
 ```
 
 This command will:
@@ -94,6 +94,8 @@ This command will:
 1. Start the Electron application in development mode
 2. Enable hot reloading for changes to the codebase
 3. Open the application window
+
+**Note:** If you need to pass additional Electron flags (e.g., `--no-sandbox --disable-gpu` for certain Linux environments), you'll need to modify the generated `output/nodemon.json` file after the first build completes.
 
 ## MCP Tool Servers (Optional)
 
@@ -133,13 +135,9 @@ asdf current nodejs
 
 If the application fails to start:
 
-1. Try running without sandbox and GPU acceleration:
+1. Check the console output for specific errors
 
-   ```bash
-   npm start -- --no-sandbox --disable-gpu
-   ```
-
-2. Check the console output for specific errors
+2. If you're running in a Linux environment without GPU support or in a container, you may need to pass additional flags. After running `npm run dev` once, edit `output/nodemon.json` and add `--no-sandbox` and `--disable-gpu` to the `exec` command, then restart the development server.
 
 ## Development Workflow
 
@@ -149,11 +147,60 @@ If the application fails to start:
 
 ## Building for Production
 
+To create a distributable package, you need to first build the application and then package it:
+
+### 1. Build the Application
+
+```bash
+npm run build
+```
+
+This command will:
+- Install electron app dependencies
+- Compile the main process, renderer process, and preload scripts
+- Create the `output` directory with compiled application code
+
+### 2. Package the Application
+
 ```bash
 npm run package
 ```
 
-This will create a distributable package in the `release/build` directory.
+This command will:
+- Use the compiled code from the `output` directory
+- Create platform-specific distributable packages in the `release` directory
+- The exact output format depends on your platform:
+  - **macOS**: `.dmg` and `.zip` files
+  - **Windows**: `.exe` installer (NSIS)
+  - **Linux**: `.AppImage` file
+
+### One-Step Build and Package
+
+Alternatively, you can run both steps sequentially:
+
+```bash
+npm run build && npm run package
+```
+
+### Publishing a Release
+
+If you want to publish the package to GitHub releases:
+
+```bash
+npm run package:publish
+```
+
+Note: This requires proper GitHub credentials and is typically used in CI/CD workflows.
+
+### Build Notes
+
+**Disk Space**: The build process creates an `output` directory (~17 GB) and a `release` directory (~200 MB for the AppImage). Ensure you have sufficient disk space.
+
+**Build Time**: The initial build takes several minutes as it compiles TypeScript, bundles assets, and rebuilds native dependencies for Electron.
+
+**Native Dependencies**: The packaging process automatically rebuilds native modules (like `better-sqlite3`, `sharp`) for the Electron runtime. This is normal and expected.
+
+**GPG Signing (Linux)**: If you see "GPG_SECRET_KEY_B64 environment variable not set, skipping AppImage signing", this is informational only. GPG signing is optional for local development builds and only required for official releases.
 
 ## Additional Resources
 

@@ -136,8 +136,8 @@ export class Renderer extends Stateful<Renderer.State> {
     });
 
     window.webContents.on("did-finish-load", () => {
-      // window?.show();
-      // window?.focus();
+      window?.show();
+      window?.focus();
     });
 
     window.webContents.once("did-fail-load", () => {
